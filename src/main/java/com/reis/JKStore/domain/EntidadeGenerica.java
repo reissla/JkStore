@@ -11,6 +11,7 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 
 import java.io.Serializable;
+import java.time.LocalDate;
 import java.util.Date;
 
 @MappedSuperclass
@@ -27,11 +28,11 @@ public class EntidadeGenerica implements Serializable {
     @Timestamp
     @Column(name = "data_criacao")
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-    private Date dataCriacao;
+    private LocalDate dataCriacao;
     @LastModifiedDate
     @Timestamp
     @Column(name = "data_edicao")
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-    private Date dataEdicao;
+    private LocalDate dataEdicao;
 
 }
