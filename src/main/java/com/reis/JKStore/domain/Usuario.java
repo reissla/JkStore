@@ -1,13 +1,13 @@
 package com.reis.JKStore.domain;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
+@EqualsAndHashCode(callSuper = true)
 @Entity
 @Table(name = "tb_usuarios")
 @Data
@@ -26,4 +26,8 @@ public class Usuario extends EntidadeGenerica{
     @NotBlank
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String senha;
+
+    @Column(name = "roleUsuario")
+    @Enumerated(EnumType.STRING)
+    private Role role;
 }
