@@ -53,6 +53,6 @@ public class UsuarioService {
         if(usuarioLogin == null){
             throw new RuntimeException();
         }
-        return usuarioRepository.procurarComLogin(usuarioLogin).isPresent();
+        return usuarioRepository.findUserByLogin(usuarioLogin).isPresent();
     }
 }

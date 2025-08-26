@@ -27,7 +27,6 @@ public class SecurityConfig {
 
     private static final String[] DOCUMENTATION_OPENAPI = {
             "/docs/index.html",
-            "/docs-dev-journey.html", "/docs-dev-journey/**",
             "/v3/api-docs/**",
             "/swagger-ui-custom.html", "/swagger-ui.html", "/swagger-ui/**",
             "/**.html", "/webjars/**", "/configuration/**", "/swagger-resources/**"
@@ -42,10 +41,6 @@ public class SecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers("/auth/**").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/user/listAll").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.DELETE, "/user/{id}").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.GET, "/summary/getSummariesWithLatestDate").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/summary/getLatestSummariesMoreLiked").permitAll()
                         .requestMatchers(DOCUMENTATION_OPENAPI).permitAll()
                         .anyRequest().authenticated())
                 .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class);

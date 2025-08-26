@@ -12,9 +12,9 @@ public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
 
     UserDetails findByLogin(String login);
 
-    Optional<Usuario> procurarComId(Long id);
+    Optional<Usuario> findById(Long id);
 
-    Optional<Usuario> procurarComLogin(String login);
+    Optional<Usuario> findUserByLogin(String login);
 
 
 }

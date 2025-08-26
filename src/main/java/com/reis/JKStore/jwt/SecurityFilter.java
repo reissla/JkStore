@@ -25,9 +25,7 @@ public class SecurityFilter extends OncePerRequestFilter {
     UsuarioRepository usuarioRepository;
 
     private static List<String> PUBLIC_URLS = List.of(
-            "/auth/**",
-            "/summary/getSummariesWithLatestDate",
-            "/summary/getLatestSummariesMoreLiked"
+            "/auth/**"
     );
 
     @Override
