@@ -51,7 +51,7 @@ public class Usuario extends EntidadeGenerica implements UserDetails {
 
     @Override
     public String getUsername() {
-        return nome;
+        return login;
     }
 
     @Override

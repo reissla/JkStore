@@ -3,6 +3,7 @@ package com.reis.JKStore.domain;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
@@ -16,6 +17,7 @@ import java.math.BigDecimal;
 @ToString
 public class Produto extends EntidadeGenerica{
 
+    @NotBlank(message = "O campo título não pode estar vazio")
     @Column(nullable = false)
     private String titulo;
 

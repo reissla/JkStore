@@ -1,10 +1,14 @@
 package com.reis.JKStore.controller;
 
 
+import com.reis.JKStore.domain.Produto;
 import com.reis.JKStore.repository.ProdutoRepository;
+import com.reis.JKStore.service.ProdutoService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -14,21 +18,34 @@ public class ProdutoController {
     @Autowired
     ProdutoRepository produtoRepository;
 
+    @Autowired
+    ProdutoService produtoService;
+
     @PostMapping("/cadastrarProduto")
-    public ResponseEntity<?> cadastrarProduto(){
+    @PreAuthorize("hasAnyAuthority('Admin')")
+    public ResponseEntity<?> cadastrarProduto(@Valid  @RequestBody Produto produto){
+        produtoService.cadastrarProduto(produto);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
-    @DeleteMapping("/removerProduto")
-    public ResponseEntity<?> removerProduto(){
+    @DeleteMapping("/removerProdutoPorId/{id}")
+    @PreAuthorize("hasAnyAuthority('Admin')")
+    public ResponseEntity<?> removerProduto(@RequestParam Long id){
+        produtoService.removerProdutoPorId(id);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
 
     @PutMapping("/editarProduto")
-    public ResponseEntity<?> editarProduto(){
+    @PreAuthorize("hasAnyAuthority('Admin')")
+    public ResponseEntity<?> editarProduto(@RequestBody Produto produto){
+        produtoService.editarProduto(produto);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
-
+    @GetMapping("/verificarDisponibilidadeProduto/{id}")
+    public ResponseEntity<?> verificarDisponibilidade(@RequestParam Long produtoId){
+        produtoService.produtoDisponivel(produtoId);
+        return ResponseEntity.status(HttpStatus.OK).build();
+    }
 }
