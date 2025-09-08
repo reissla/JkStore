@@ -1,12 +1,15 @@
 package com.reis.JKStore.service;
 
 import com.reis.JKStore.domain.Produto;
+import com.reis.JKStore.domain.dtos.ProdutoDTO;
 import com.reis.JKStore.repository.ProdutoRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDate;
 
 @Service
 public class ProdutoService {
@@ -18,10 +21,9 @@ public class ProdutoService {
     UsuarioService usuarioService;
 
     public void cadastrarProduto(Produto produto) {
-        if (produtoDisponivel(produto.getId())) {
+        if(procurarPorTitulo(produto.getTitulo()) != null){
             throw new RuntimeException();
         }
-
         produtoRepository.save(produto);
     }
 
@@ -37,13 +39,14 @@ public class ProdutoService {
     }
 
     @Transactional
-    public void editarProduto(Produto produto) {
+    public void editarProduto(Long id,ProdutoDTO produto) {
         if (produto == null) {
             throw new RuntimeException();
         }
 
-        Produto produtoAtual = procurarPorId(produto.getId());
+        Produto produtoAtual = procurarPorId(id);
         BeanUtils.copyProperties(produto, produtoAtual);
+        produtoAtual.setDataEdicao(LocalDate.now());
         produtoRepository.save(produtoAtual);
     }
 
@@ -63,4 +66,7 @@ public class ProdutoService {
         return produtoRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Produto não encontrado."));
     }
 
+    public Produto procurarPorTitulo(String titulo){
+        return produtoRepository.findByTitulo(titulo).orElseThrow(() -> new EntityNotFoundException("Produto não encontrado."));
+    }
 }

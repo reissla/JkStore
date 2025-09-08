@@ -2,6 +2,7 @@ package com.reis.JKStore.controller;
 
 
 import com.reis.JKStore.domain.Produto;
+import com.reis.JKStore.domain.dtos.ProdutoDTO;
 import com.reis.JKStore.repository.ProdutoRepository;
 import com.reis.JKStore.service.ProdutoService;
 import jakarta.validation.Valid;
@@ -28,7 +29,7 @@ public class ProdutoController {
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
-    @DeleteMapping("/removerProdutoPorId/{id}")
+    @DeleteMapping("/removerProdutoPorId")
     @PreAuthorize("hasAnyAuthority('Admin')")
     public ResponseEntity<?> removerProduto(@RequestParam Long id){
         produtoService.removerProdutoPorId(id);
@@ -38,12 +39,12 @@ public class ProdutoController {
 
     @PutMapping("/editarProduto")
     @PreAuthorize("hasAnyAuthority('Admin')")
-    public ResponseEntity<?> editarProduto(@RequestBody Produto produto){
-        produtoService.editarProduto(produto);
+    public ResponseEntity<?> editarProduto(@RequestParam Long id,@RequestBody ProdutoDTO produto){
+        produtoService.editarProduto(id,produto);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
-    @GetMapping("/verificarDisponibilidadeProduto/{id}")
+    @GetMapping("/verificarDisponibilidadeProduto")
     public ResponseEntity<?> verificarDisponibilidade(@RequestParam Long produtoId){
         produtoService.produtoDisponivel(produtoId);
         return ResponseEntity.status(HttpStatus.OK).build();

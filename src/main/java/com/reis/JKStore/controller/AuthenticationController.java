@@ -41,7 +41,7 @@ public class AuthenticationController {
             return ResponseEntity.ok()
                     .header("Authorization", "Bearer " + token)
                     .header("Access-Control-Expose-Headers", "Authorization")
-                    .body("Login feito com sucesso!");
+                    .body(token);
         } catch(AuthenticationCredentialsNotFoundException exception){
             log.warn("BAD CREDENTIALS for username {}", dto.login());
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
