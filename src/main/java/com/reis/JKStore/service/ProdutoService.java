@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Service
 public class ProdutoService {
@@ -21,8 +22,9 @@ public class ProdutoService {
     UsuarioService usuarioService;
 
     public void cadastrarProduto(Produto produto) {
-        if(procurarPorTitulo(produto.getTitulo()) != null){
-            throw new RuntimeException();
+        Produto pr = procurarPorTitulo(produto.getTitulo());
+        if(pr != null){
+            throw new RuntimeException("Produto já existe na base de dados.");
         }
         produtoRepository.save(produto);
     }
@@ -30,9 +32,8 @@ public class ProdutoService {
     @Transactional
     public void removerProdutoPorId(Long id) {
         if (id == null) {
-            throw new RuntimeException();
+            throw new RuntimeException("Id passado não pode ser Null");
         }
-
         Produto produto = procurarPorId(id);
         produto.setActive(false);
         produtoRepository.save(produto);
@@ -50,6 +51,11 @@ public class ProdutoService {
         produtoRepository.save(produtoAtual);
     }
 
+    public List<Produto> listarProdutosEmDetaque(){
+        return produtoRepository.procurarProdutosDestacados().
+                orElseThrow(() -> new RuntimeException("Erro ao procurar produtos destacados."));
+    }
+
     public boolean produtoDisponivel(Long produtoId){
         if(produtoId == null){
             throw new RuntimeException();
@@ -60,6 +66,21 @@ public class ProdutoService {
             return true;
         }
         return false;
+    }
+
+    @Transactional
+    public void atualizarStatusDestaqueProduto(Long produtoId, Boolean destaque){
+        if(produtoId == null || destaque == null){
+            throw new RuntimeException("nenhum valor passado deve ser null");
+        }
+
+        Produto produto = procurarPorId(produtoId);
+
+        produto.setDestaque(destaque);
+    }
+
+    public List<Produto> listarProdutos(){
+        return produtoRepository.findAll();
     }
 
     public Produto procurarPorId(Long id){

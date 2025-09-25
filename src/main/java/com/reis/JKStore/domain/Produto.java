@@ -21,6 +21,9 @@ public class Produto extends EntidadeGenerica{
     @Column(nullable = false)
     private String titulo;
 
+    @Column(name = "imagem_produto")
+    private Anexo imagemProduto;
+
     @Column(columnDefinition = "TEXT")
     private String descricao;
 
@@ -29,4 +32,7 @@ public class Produto extends EntidadeGenerica{
 
     @Column(nullable = false)
     private Boolean disponivel;
+
+    @Column(name = "destaque")
+    private Boolean destaque;
 }

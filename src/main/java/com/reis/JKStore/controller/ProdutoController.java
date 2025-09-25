@@ -12,8 +12,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
-@RequestMapping("/produto")
+@RequestMapping("/produtos")
 public class ProdutoController {
 
     @Autowired
@@ -26,16 +28,15 @@ public class ProdutoController {
     @PreAuthorize("hasAnyAuthority('Admin')")
     public ResponseEntity<?> cadastrarProduto(@Valid  @RequestBody Produto produto){
         produtoService.cadastrarProduto(produto);
-        return ResponseEntity.status(HttpStatus.OK).build();
+        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     @DeleteMapping("/removerProdutoPorId")
     @PreAuthorize("hasAnyAuthority('Admin')")
     public ResponseEntity<?> removerProduto(@RequestParam Long id){
         produtoService.removerProdutoPorId(id);
-        return ResponseEntity.status(HttpStatus.OK).build();
+        return ResponseEntity.status(HttpStatus.LOCKED).build();
     }
-
 
     @PutMapping("/editarProduto")
     @PreAuthorize("hasAnyAuthority('Admin')")
@@ -47,6 +48,24 @@ public class ProdutoController {
     @GetMapping("/verificarDisponibilidadeProduto")
     public ResponseEntity<?> verificarDisponibilidade(@RequestParam Long produtoId){
         produtoService.produtoDisponivel(produtoId);
+        return ResponseEntity.status(HttpStatus.OK).build();
+    }
+
+    @GetMapping("/listarProdutos")
+    public ResponseEntity<List<Produto>> listarProdutos(){
+        return ResponseEntity.status(HttpStatus.OK).body(produtoService.listarProdutos());
+    }
+
+    @GetMapping("/listarProdutosEmDestaque")
+    public ResponseEntity<List<Produto>> listarProdutosEmDestaque(){
+        return ResponseEntity.status(HttpStatus.OK).body(produtoService.listarProdutosEmDetaque());
+    }
+
+    @PostMapping("/atualizarStatusDestaqueProduto")
+    @PreAuthorize("hasAnyAuthority('Admin')")
+    public ResponseEntity<?> atualizarStatusDestaqueProduto(@RequestParam Long produtoId,
+                                             @RequestParam Boolean destaque){
+        produtoService.atualizarStatusDestaqueProduto(produtoId, destaque);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 }
