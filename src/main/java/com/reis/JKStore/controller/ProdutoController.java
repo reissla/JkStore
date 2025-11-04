@@ -61,11 +61,27 @@ public class ProdutoController {
         return ResponseEntity.status(HttpStatus.OK).body(produtoService.listarProdutosEmDetaque());
     }
 
+    @GetMapping("/procurarProdutoPorId/{produtoId}")
+    public ResponseEntity<Produto> procurarProdutoPorId(@PathVariable Long produtoId){
+        return ResponseEntity.status(HttpStatus.OK).body(produtoService.procurarPorId(produtoId));
+    }
+
     @PostMapping("/atualizarStatusDestaqueProduto")
     @PreAuthorize("hasAnyAuthority('Admin')")
     public ResponseEntity<?> atualizarStatusDestaqueProduto(@RequestParam Long produtoId,
                                              @RequestParam Boolean destaque){
         produtoService.atualizarStatusDestaqueProduto(produtoId, destaque);
         return ResponseEntity.status(HttpStatus.OK).build();
+    }
+
+    @PostMapping("/adicionarProdutoAoCarrinho/{produtoId}")
+    public ResponseEntity<?> adicionarProdutoAoCarrinho(@PathVariable Long produtoId){
+        produtoService.adicionarProdutoAoCarrinho(produtoId);
+        return ResponseEntity.status(HttpStatus.OK).build();
+    }
+
+    @GetMapping("/listarPordutosNoCarrinho")
+    public ResponseEntity<List<Produto>> listarPordutosNoCarrinho(){
+        return ResponseEntity.status(HttpStatus.OK).body(produtoService.listarProdutosNoCarrinho());
     }
 }

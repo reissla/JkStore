@@ -1,7 +1,10 @@
 package com.reis.JKStore.service;
 
+import com.reis.JKStore.domain.Carrinho;
 import com.reis.JKStore.domain.Produto;
+import com.reis.JKStore.domain.Usuario;
 import com.reis.JKStore.domain.dtos.ProdutoDTO;
+import com.reis.JKStore.repository.CarrinhoRepository;
 import com.reis.JKStore.repository.ProdutoRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.BeanUtils;
@@ -10,14 +13,17 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class ProdutoService {
 
     @Autowired
     ProdutoRepository produtoRepository;
-
+    @Autowired
+    CarrinhoRepository carrinhoRepository;
     @Autowired
     UsuarioService usuarioService;
 
@@ -77,6 +83,35 @@ public class ProdutoService {
         Produto produto = procurarPorId(produtoId);
 
         produto.setDestaque(destaque);
+    }
+
+    @Transactional
+    public void adicionarProdutoAoCarrinho(Long produtoId) {
+        if (produtoId == null) {
+            throw new IllegalArgumentException("O ID do produto não pode ser nulo");
+        }
+
+        Produto produto = procurarPorId(produtoId);
+        if (!produtoDisponivel(produto.getId())) {
+            throw new IllegalStateException("Produto indisponível no momento");
+        }
+
+        Usuario usuario = usuarioService.usuarioLogado();
+        Carrinho carrinho = carrinhoRepository.findCarrinhoByUsuarioId(usuario.getId());
+
+        if (carrinho == null) {
+            carrinho = new Carrinho();
+            carrinho.setUsuario(usuario);
+            carrinho.setProdutos(new ArrayList<>());
+        }
+
+        carrinho.getProdutos().add(produto);
+        carrinhoRepository.save(carrinho);
+    }
+
+    public List<Produto> listarProdutosNoCarrinho(){
+        Long usuarioId = usuarioService.usuarioLogado().getId();
+        return produtoRepository.listarProdutosNoCarrinhoPorUsuarioId(usuarioId);
     }
 
     public List<Produto> listarProdutos(){

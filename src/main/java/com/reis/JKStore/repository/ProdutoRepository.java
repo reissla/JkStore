@@ -3,6 +3,7 @@ package com.reis.JKStore.repository;
 import com.reis.JKStore.domain.Produto;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -20,4 +21,8 @@ public interface ProdutoRepository extends JpaRepository<Produto, Long> {
             "and tp.active = true", nativeQuery = true)
     Optional<List<Produto>> procurarProdutosDestacados();
 
+    @Query("SELECT p FROM Carrinho c " +
+            "JOIN c.produtos p " +
+            "WHERE c.usuario.id = :usuarioId " )
+    List<Produto> listarProdutosNoCarrinhoPorUsuarioId(@Param("usuarioId") long usuarioId);
 }
