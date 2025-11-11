@@ -25,8 +25,9 @@ public class SecurityFilter extends OncePerRequestFilter {
     UsuarioRepository usuarioRepository;
 
     private static List<String> PUBLIC_URLS = List.of(
-            "/auth/**"
-    );
+            "/auth/**",
+            "/produtos/listarProdutosEmDestaque",
+            "/produtos/listarProdutos");
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {

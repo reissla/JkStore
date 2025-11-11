@@ -4,6 +4,10 @@ import com.reis.JKStore.domain.Carrinho;
 import com.reis.JKStore.domain.Produto;
 import com.reis.JKStore.domain.Usuario;
 import com.reis.JKStore.domain.dtos.ProdutoDTO;
+import com.reis.JKStore.exceptions.IdNullException;
+import com.reis.JKStore.exceptions.ProdutoIndisponivelException;
+import com.reis.JKStore.exceptions.ProdutoNaoEncontradoException;
+import com.reis.JKStore.exceptions.ValorNullException;
 import com.reis.JKStore.repository.CarrinhoRepository;
 import com.reis.JKStore.repository.ProdutoRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -30,16 +34,15 @@ public class ProdutoService {
     public void cadastrarProduto(Produto produto) {
         Produto pr = procurarPorTitulo(produto.getTitulo());
         if(pr != null){
-            throw new RuntimeException("Produto já existe na base de dados.");
+            throw new ProdutoIndisponivelException();
         }
         produtoRepository.save(produto);
     }
 
     @Transactional
     public void removerProdutoPorId(Long id) {
-        if (id == null) {
-            throw new RuntimeException("Id passado não pode ser Null");
-        }
+        verificarIdNull(id);
+
         Produto produto = procurarPorId(id);
         produto.setActive(false);
         produtoRepository.save(produto);
@@ -59,27 +62,14 @@ public class ProdutoService {
 
     public List<Produto> listarProdutosEmDetaque(){
         return produtoRepository.procurarProdutosDestacados().
-                orElseThrow(() -> new RuntimeException("Erro ao procurar produtos destacados."));
-    }
-
-    public boolean produtoDisponivel(Long produtoId){
-        if(produtoId == null){
-            throw new RuntimeException();
-        }
-
-        Produto produto = procurarPorId(produtoId);
-        if(produto.getDisponivel()){
-            return true;
-        }
-        return false;
+                orElseThrow(ProdutoNaoEncontradoException::new);
     }
 
     @Transactional
     public void atualizarStatusDestaqueProduto(Long produtoId, Boolean destaque){
         if(produtoId == null || destaque == null){
-            throw new RuntimeException("nenhum valor passado deve ser null");
+            throw new ValorNullException();
         }
-
         Produto produto = procurarPorId(produtoId);
 
         produto.setDestaque(destaque);
@@ -87,14 +77,9 @@ public class ProdutoService {
 
     @Transactional
     public void adicionarProdutoAoCarrinho(Long produtoId) {
-        if (produtoId == null) {
-            throw new IllegalArgumentException("O ID do produto não pode ser nulo");
-        }
-
+        verificarIdNull(produtoId);
         Produto produto = procurarPorId(produtoId);
-        if (!produtoDisponivel(produto.getId())) {
-            throw new IllegalStateException("Produto indisponível no momento");
-        }
+        produtoDisponivel(produtoId);
 
         Usuario usuario = usuarioService.usuarioLogado();
         Carrinho carrinho = carrinhoRepository.findCarrinhoByUsuarioId(usuario.getId());
@@ -103,6 +88,10 @@ public class ProdutoService {
             carrinho = new Carrinho();
             carrinho.setUsuario(usuario);
             carrinho.setProdutos(new ArrayList<>());
+        } else {
+            carrinho.getProdutos().forEach( p -> {
+                if(p.getId().equals(produtoId)) throw new ProdutoIndisponivelException();
+            });
         }
 
         carrinho.getProdutos().add(produto);
@@ -119,10 +108,27 @@ public class ProdutoService {
     }
 
     public Produto procurarPorId(Long id){
-        return produtoRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Produto não encontrado."));
+        return produtoRepository.findById(id).orElseThrow(ProdutoNaoEncontradoException::new);
     }
 
     public Produto procurarPorTitulo(String titulo){
-        return produtoRepository.findByTitulo(titulo).orElseThrow(() -> new EntityNotFoundException("Produto não encontrado."));
+        return produtoRepository.findByTitulo(titulo).orElseThrow(ProdutoNaoEncontradoException::new);
+    }
+
+    public void produtoDisponivel(Long produtoId){
+        if(produtoId == null){
+            throw new IdNullException();
+        }
+
+        Produto produto = procurarPorId(produtoId);
+        if(!produto.getDisponivel()){
+            throw new ProdutoIndisponivelException();
+        }
+    }
+
+    public void verificarIdNull(Long id){
+        if(id == null){
+            throw new IdNullException();
+        }
     }
 }
